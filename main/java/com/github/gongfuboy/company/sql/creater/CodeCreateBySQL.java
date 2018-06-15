@@ -10,8 +10,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.*;
 
 public class CodeCreateBySQL {
@@ -145,16 +143,6 @@ public class CodeCreateBySQL {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void test(String file) throws Exception{
-        readConf(file);
-        Class.forName(dataBaseDriver);
-        String databaseConnectUrl = url;
-        databaseConnectUrl = databaseConnectUrl.replace("@module", db);
-        Connection connection = DriverManager.getConnection(databaseConnectUrl, username, password);
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
     }
 
     /**

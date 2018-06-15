@@ -116,19 +116,6 @@ object DbGeneratorUtil {
     camel.replaceFirst(s"${camel.charAt(0)}", s"${camel.charAt(0).toLower}")
   }
 
-  /**
-    * aaa_bbb => AaaBbb
-    *
-    * @param name
-    * @return
-    */
-  def toFirstUpperCamel(name: String): String = {
-    name.split("_").map(item => {
-      val result = item.toLowerCase
-      result.charAt(0).toUpper + result.substring(1)
-    }).mkString("")
-  }
-
   def toScalaFieldType(tableFieldType: String, isNullable: String): String = {
     val dataType = tableFieldType.toUpperCase() match {
       case "INT" | "SMALLINT" | "TINYINT" | "INT UNSIGNED" | "SMALLINT UNSIGNED" | "TINYINT UNSIGNED" | "BIT" => "Int"
@@ -146,51 +133,5 @@ object DbGeneratorUtil {
       dataType
     }
   }
-
-
-  def connectJdbc(): Option[Connection] = {
-    val url = System.getProperty("db.url")
-    val user = System.getProperty("db.user")
-    val passwd = System.getProperty("db.password")
-    println(s"connectTo, url: ${url}, user: ${user}, passwd: ${passwd}")
-
-    //val url = s"jdbc:mysql://${ip}/${db}?useUnicode=true&characterEncoding=utf8"
-    try {
-      if (url == null || url.isEmpty) throw new Exception("please check if 'plugin.db.url' property is config in dapeng.properties ")
-      if (user == null || user.isEmpty) throw new Exception("please check if 'plugin.db.user' property is config in dapeng.properties ")
-      if (passwd == null || passwd.isEmpty) throw new Exception("please check if 'plugin.db.password' property is config in dapeng.properties ")
-
-      Class.forName(driver)
-      Some(DriverManager.getConnection(url, user, passwd))
-    } catch {
-      case e: Exception =>
-        println(s" failed to instance jdbc driver: ${e.getCause} , ${e.getMessage}")
-        Option.empty
-    }
-
-  }
-
-
-  def getTableNamesByDb(db: String, connection: Connection) = {
-    val tables = connection.getMetaData.getTables("", db, "", null)
-    val tableNames = mutable.MutableList[String]()
-    while (tables.next()) {
-      tableNames += tables.getString("TABLE_NAME")
-    }
-
-    tableNames
-  }
-
-  def tableNameConvert(tableName: String): String = {
-    if (tableName.endsWith("ies")) tableName.substring(0, tableName.length - 3) + "y"
-    else if (tableName.endsWith("ses")) tableName.substring(0, tableName.length - 3) + "s"
-    else if (tableName.endsWith("shes")) tableName.substring(0, tableName.length - 4) + "sh"
-    else if (tableName.endsWith("ches")) tableName.substring(0, tableName.length - 4) + "ch"
-    else if (tableName.endsWith("xes")) tableName.substring(0, tableName.length - 3) + "x"
-    else if (tableName.endsWith("ves")) tableName.substring(0, tableName.length - 3) + "f?"
-    else if (tableName.endsWith("s")) tableName.substring(0, tableName.length - 1)
-    else tableName
-  }
-
 
 }
