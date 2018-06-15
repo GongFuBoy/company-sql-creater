@@ -1,13 +1,10 @@
 package com.github.gongfuboy.company.sql.creater
 
-import java.io.{File, FileInputStream, PrintWriter}
-import java.sql.{Connection, DriverManager, ResultSet}
+import java.io.{File, PrintWriter}
 import java.text.ParseException
-import java.util.Properties
 
 import com.github.gongfuboy.company.sql.creater.pojo.DatabaseInfoBean
 
-import scala.collection.mutable
 import scala.collection.JavaConversions._
 
 
