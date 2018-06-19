@@ -67,7 +67,7 @@ public class CodeCreateBySQL {
         FileUtils.writeFile(scalaTargetFilePath,scalaClassFileSource);
         System.out.println("=================scala-domain生成结束====================");
 
-        String thriftClassFileSource = genStruct(resourceList);
+        String thriftClassFileSource = ThriftFileCreatorUtils.createThriftFileSource(resourceList, thrift_package, thrift_response_struct_name);
         String thriftTargetFilePath = filePath + thrift_request_struct_name + ".thrift";
         FileUtils.writeFile(thriftTargetFilePath, thriftClassFileSource);
         System.out.println("=================thrift-response生成结束====================");
@@ -176,25 +176,6 @@ public class CodeCreateBySQL {
             }
         }
     }
-
-    /**
-     * 生成thrift结构体
-     */
-    public static String genStruct(List<DatabaseInfoBean> sourceList){
-        StringBuffer structBuf = new StringBuffer();
-        structBuf.append(String.format("namespace java com.kuaisu.%s.dto\n\n",thrift_package));
-        structBuf.append(String.format("struct T%s{\n", thrift_response_struct_name));
-        for (int i=0; i < sourceList.size(); i++) {
-            DatabaseInfoBean sourceBean = sourceList.get(i);
-            structBuf.append("   /**\n").append("   * ").append(sourceBean.remarks).append("\n").append("*/\n");
-            structBuf.append(" ").append(i + 1).append(" : ").append(MYSQL_BOOLEAN.equals(sourceBean.isNullable) ? "" : "optional").append("  ").
-                    append(ThriftUtil.toThriftType(sourceBean.typeName)).append("  ").append(ThriftUtil.underlineToCamel(false, sourceBean.columnName, false)).
-                    append(",\r\n");
-        }
-        structBuf.append("}\n");
-        return structBuf.toString();
-    }
-
 
 
 }

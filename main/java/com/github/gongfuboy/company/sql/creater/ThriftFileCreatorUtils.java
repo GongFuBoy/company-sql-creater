@@ -1,9 +1,33 @@
 package com.github.gongfuboy.company.sql.creater;
 
+import com.github.gongfuboy.company.sql.creater.pojo.DatabaseInfoBean;
+
+import java.util.List;
+
 /**
- * Created by ZhouLiMing on 2018/6/15.
+ * Created by ZhouLiMing on 2018/6/19.
  */
-public class ThriftUtil {
+public class ThriftFileCreatorUtils {
+
+    private static String MYSQL_BOOLEAN = "1";
+
+    /**
+     * 生成thrift结构体
+     */
+    public static String createThriftFileSource(List<DatabaseInfoBean> sourceList, String thrift_package, String thrift_response_struct_name){
+        StringBuffer structBuf = new StringBuffer();
+        structBuf.append(String.format("namespace java com.kuaisu.%s.dto\n\n",thrift_package));
+        structBuf.append(String.format("struct T%s{\n", thrift_response_struct_name));
+        for (int i=0; i < sourceList.size(); i++) {
+            DatabaseInfoBean sourceBean = sourceList.get(i);
+            structBuf.append("   /**\n").append("   * ").append(sourceBean.remarks).append("\n").append("*/\n");
+            structBuf.append(" ").append(i + 1).append(" : ").append(MYSQL_BOOLEAN.equals(sourceBean.isNullable) ? "" : "optional").append("  ").
+                    append(toThriftType(sourceBean.typeName)).append("  ").append(underlineToCamel(false, sourceBean.columnName, false)).
+                    append(",\r\n");
+        }
+        structBuf.append("}\n");
+        return structBuf.toString();
+    }
 
     public static final char UNDERLINE = '_';
 
