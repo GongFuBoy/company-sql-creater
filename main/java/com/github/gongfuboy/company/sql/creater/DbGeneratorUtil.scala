@@ -10,20 +10,6 @@ import scala.collection.JavaConversions._
 
 object DbGeneratorUtil {
 
-  val driver = "com.mysql.jdbc.Driver"
-  val enumRegx = """(.*\s*),(\s*\d:\s*.*\(\s*[\d|a-zA-Z|_]+\)\s*;?)+""".r
-  val singleEnumRegx = """\s*([\d]+):\s*([\u4e00-\u9fa5|\w|-]+)\(([\d|a-zA-Z|_]+)\)""".r
-
-  def generateEntityFile(fileContent: String, targetPath: String, fileName: String) = {
-    val file = new File(targetPath + fileName)
-    val created = if (!file.getParentFile.exists()) file.getParentFile.mkdirs() else true
-    println(s"generating file: ${targetPath}${file.getName}: ${created}")
-    val printWriter = new PrintWriter(file,"UTF-8")
-    printWriter.println(fileContent)
-    printWriter.flush()
-    printWriter.close()
-  }
-
   def toDbClassTemplate(scalaDomainName: String, scalaPackage: String, databaseInfoBeans : java.util.List[DatabaseInfoBean]) = {
     val sb = new StringBuilder(256)
     val className = scalaDomainName
