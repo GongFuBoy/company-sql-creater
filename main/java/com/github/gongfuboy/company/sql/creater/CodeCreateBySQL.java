@@ -16,14 +16,6 @@ import java.util.Properties;
 
 public class CodeCreateBySQL {
 
-    /**静态关键字*/
-    private static String AS = " as ";
-    private static String LEFT_BRACKET = "(";
-    private static String BLANK = " ";
-    private static String RIGHT_BRACKET = ")";
-    private static String MYSQL_BOOLEAN = "1";
-
-
     private static Properties properties;
 
     private static String dataBaseDriver;
@@ -50,6 +42,8 @@ public class CodeCreateBySQL {
      *  , fieldName>>*/
     private static Map<String, List<TableFieldBean>> resultFieldMap = new HashMap<String, List<TableFieldBean>>();
 
+    private static Map<String, List<TableFieldBean>> conditionFielfMap = new HashMap<String, List<TableFieldBean>>();
+
     /**
      * 生成相应的代码
      * @param args
@@ -62,17 +56,23 @@ public class CodeCreateBySQL {
         JdbcUtils.setConnection();
         /**解析结果集*/
         SQLParserUtils.parseResultFieldMap(sql, resultFieldMap);
-        List<DatabaseInfoBean> resourceList = DbUtils.getDatabaseColumnInfo(connectionMap, resultFieldMap);
+        List<DatabaseInfoBean> responseDatabaseInfoList = DbUtils.getDatabaseColumnInfo(connectionMap, resultFieldMap);
 
-        String scalaClassFileSource = DbGeneratorUtil.toDbClassTemplate(scalaDomainName, scalaPackage, resourceList);
+        System.out.println("=================scala-domain生成开始====================");
+        String scalaClassFileSource = DbGeneratorUtil.toDbClassTemplate(scalaDomainName, scalaPackage, responseDatabaseInfoList);
         String scalaTargetFilePath = filePath + scalaDomainName + ".scala";
         FileUtils.writeFile(scalaTargetFilePath,scalaClassFileSource);
         System.out.println("=================scala-domain生成结束====================");
 
-        String thriftClassFileSource = ThriftFileCreatorUtils.createThriftFileSource(resourceList, thrift_package, thrift_response_struct_name);
-        String thriftTargetFilePath = filePath + thrift_request_struct_name + ".thrift";
-        FileUtils.writeFile(thriftTargetFilePath, thriftClassFileSource);
+        System.out.println("=================thrift-response生成开始====================");
+        String responseThriftClassFileSource = ThriftFileCreatorUtils.createResponseThriftFileSource(responseDatabaseInfoList, thrift_package, thrift_response_struct_name);
+        String responseThriftTargetFilePath = filePath + thrift_response_struct_name + ".thrift";
+        FileUtils.writeFile(responseThriftTargetFilePath, responseThriftClassFileSource);
         System.out.println("=================thrift-response生成结束====================");
+
+        /**解析条件集*/
+        SQLParserUtils.parseConditionFieldMap(sql, conditionFielfMap);
+
 
     }
 

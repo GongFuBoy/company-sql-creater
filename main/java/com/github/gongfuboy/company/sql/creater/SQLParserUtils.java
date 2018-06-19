@@ -12,6 +12,16 @@ import java.util.Map;
  */
 public class SQLParserUtils {
 
+
+    private static String SELECT = "select";
+    private static String FROM = "from";
+    private static String WHERE = "where";
+    private static String ORDER_BY = "order by";
+    private static String GROUP_BY = "group by";
+    private static String AND = " and ";
+    private static String OR = " or ";
+
+
     private static String AS = " as ";
     private static String LEFT_BRACKET = "(";
     private static String BLANK = " ";
@@ -19,9 +29,9 @@ public class SQLParserUtils {
 
 
     public static void parseResultFieldMap(String sql, Map<String, List<TableFieldBean>> resultFieldMap) {
-        int startIndex = StringUtils.indexOfIgnoreCase(sql, "select");
-        int endIndex = StringUtils.indexOfIgnoreCase(sql, "from");
-        String sourceResultSelect = StringUtils.substring(sql, startIndex + "select".length(), endIndex).trim();
+        int startIndex = StringUtils.indexOfIgnoreCase(sql, SELECT);
+        int endIndex = StringUtils.indexOfIgnoreCase(sql, FROM);
+        String sourceResultSelect = StringUtils.substring(sql, startIndex + SELECT.length(), endIndex).trim();
         String[] results = StringUtils.splitByWholeSeparator(sourceResultSelect, ",");
         for (String temp : results) {
             if (isSimpleField(temp)) {
@@ -65,6 +75,31 @@ public class SQLParserUtils {
         } else {
             parseResultSimpleField(remainResultString, otherName, resultFieldMap);
         }
+    }
+
+    public static void main(String[] args) {
+        parseConditionSQL(new ArrayList<String>(), "1=1 and id = 1 or name != null and class_name = 'any_class_name'");
+    }
+
+    public static void parseConditionFieldMap(String sql, Map<String, List<TableFieldBean>> conditionFielfMap) {
+        int startIndex = StringUtils.lastIndexOfIgnoreCase(sql, WHERE);
+        int orderByEndIndex = StringUtils.lastIndexOfIgnoreCase(sql, ORDER_BY);
+        int groupByEndIndex = StringUtils.lastIndexOfIgnoreCase(sql, GROUP_BY);
+        int endIndex = orderByEndIndex > groupByEndIndex ? groupByEndIndex : orderByEndIndex;
+        String conditionSourceString = StringUtils.substring(sql ,startIndex + WHERE.length(), endIndex == -1 ? -1 : endIndex).trim();
+        List<String> sourceStringList = new ArrayList<String>();
+        parseConditionSQL(sourceStringList, conditionSourceString);
+
+    }
+
+    private static void parseConditionSQL(List<String> sourceStringList, String sourceString) {
+        String replaceString = StringUtils.replace(sourceString, AND, ",");
+        String realString = StringUtils.replace(replaceString, OR, ",");
+        String[] sourceArray = StringUtils.split(realString, ",");
+        for (String temp : sourceArray) {
+            sourceStringList.add(temp.trim());
+        }
+
     }
 
 }
