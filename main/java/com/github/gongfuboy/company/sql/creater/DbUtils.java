@@ -20,20 +20,20 @@ public class DbUtils {
             Connection connection = connectionMap.get(databaseName);
             List<TableFieldBean> fieldBeans = resultFieldMap.get(databaseName);
             for (TableFieldBean temp : fieldBeans) {
-                DatabaseInfoBean databaseInfoBean = getColumeInfo(temp.tableName, databaseName, connection, temp.fieldName);
+                DatabaseInfoBean databaseInfoBean = getColumeInfo(temp.tableName, databaseName, connection, temp.fieldName, temp.otherName);
                 resultList.add(databaseInfoBean);
             }
         }
         return resultList;
     }
 
-    public static DatabaseInfoBean getColumeInfo(String tableName, String databaseName, Connection connection, String columnName) {
+    public static DatabaseInfoBean getColumeInfo(String tableName, String databaseName, Connection connection, String columnName, String otherName) {
         DatabaseInfoBean result = new DatabaseInfoBean();
         try {
-            ResultSet resultSet = connection.getMetaData().getColumns("", databaseName, tableName, "");
+            ResultSet resultSet = connection.getMetaData().getColumns("", databaseName, tableName, columnName);
             while (resultSet.next()) {
                 if (resultSet.getString("COLUMN_NAME").equals(columnName)) {
-                    result.columnName = resultSet.getString("COLUMN_NAME");
+                    result.columnName = otherName == null ? resultSet.getString("COLUMN_NAME") : otherName;
                     result.isNullable = resultSet.getString("IS_NULLABLE");
                     result.remarks = resultSet.getString("REMARKS");
                     result.typeName = resultSet.getString("TYPE_NAME");

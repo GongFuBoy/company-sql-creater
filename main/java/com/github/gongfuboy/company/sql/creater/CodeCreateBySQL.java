@@ -19,6 +19,7 @@ public class CodeCreateBySQL {
     private static String LEFT_BRACKET = "(";
     private static String BLANK = " ";
     private static String RIGHT_BRACKET = ")";
+    private static String MYSQL_BOOLEAN = "1";
 
 
     private static Properties properties;
@@ -31,6 +32,10 @@ public class CodeCreateBySQL {
     private static String sql;
     private static String scalaPackage;
     private static String scalaDomainName;
+    private static String thrift_package;
+    private static String thrift_response_struct_name;
+    private static String thrift_request_struct_name;
+
 
     private static String filePath;
 
@@ -55,14 +60,17 @@ public class CodeCreateBySQL {
         JdbcUtils.setConnection();
         /**解析结果集*/
         parseResultFieldMap(sql);
-
         List<DatabaseInfoBean> resourceList = DbUtils.getDatabaseColumnInfo(connectionMap, resultFieldMap);
+
         String scalaClassFileSource = DbGeneratorUtil.toDbClassTemplate(scalaDomainName, scalaPackage, resourceList);
-
-        String targetFilePath = filePath + scalaDomainName + ".scala";
-
-        DbGeneratorUtil.generateEntityFile(scalaClassFileSource, targetFilePath, scalaDomainName);
+        String scalaTargetFilePath = filePath + scalaDomainName + ".scala";
+        FileUtils.writeFile(scalaTargetFilePath,scalaClassFileSource);
         System.out.println("=================scala-domain生成结束====================");
+
+        String thriftClassFileSource = genStruct(resourceList);
+        String thriftTargetFilePath = filePath + thrift_request_struct_name + ".thrift";
+        FileUtils.writeFile(thriftTargetFilePath, thriftClassFileSource);
+        System.out.println("=================thrift-response生成结束====================");
 
     }
 
@@ -140,6 +148,10 @@ public class CodeCreateBySQL {
             scalaDomainName = properties.getProperty("scala_domain_name");
             filePath = properties.getProperty("filePath");
 
+            thrift_package = properties.getProperty("thrift_package");
+            thrift_response_struct_name = properties.getProperty("thrift_response_struct_name");
+            thrift_request_struct_name = properties.getProperty("thrift_request_struct_name");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -163,6 +175,24 @@ public class CodeCreateBySQL {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 生成thrift结构体
+     */
+    public static String genStruct(List<DatabaseInfoBean> sourceList){
+        StringBuffer structBuf = new StringBuffer();
+        structBuf.append(String.format("namespace java com.kuaisu.%s.dto\n\n",thrift_package));
+        structBuf.append(String.format("struct T%s{\n", thrift_response_struct_name));
+        for (int i=0; i < sourceList.size(); i++) {
+            DatabaseInfoBean sourceBean = sourceList.get(i);
+            structBuf.append("   /**\n").append("   * ").append(sourceBean.remarks).append("\n").append("*/\n");
+            structBuf.append(" ").append(i + 1).append(" : ").append(MYSQL_BOOLEAN.equals(sourceBean.isNullable) ? "" : "optional").append("  ").
+                    append(ThriftUtil.toThriftType(sourceBean.typeName)).append("  ").append(ThriftUtil.underlineToCamel(false, sourceBean.columnName, false)).
+                    append(",\r\n");
+        }
+        structBuf.append("}\n");
+        return structBuf.toString();
     }
 
 
