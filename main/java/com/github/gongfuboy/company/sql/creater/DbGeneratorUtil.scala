@@ -1,6 +1,5 @@
 package com.github.gongfuboy.company.sql.creater
 
-import java.io.{File, PrintWriter}
 import java.text.ParseException
 
 import com.github.gongfuboy.company.sql.creater.pojo.DatabaseInfoBean

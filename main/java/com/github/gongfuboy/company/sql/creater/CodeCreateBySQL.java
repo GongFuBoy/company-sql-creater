@@ -55,7 +55,7 @@ public class CodeCreateBySQL {
         readConf(args[0]);
         JdbcUtils.setConnection();
         /**解析结果集*/
-        SQLParserUtils.parseResultFieldMap(sql, resultFieldMap);
+        SQLParserUtils.parseResultByUtils(sql, resultFieldMap);
         List<DatabaseInfoBean> responseDatabaseInfoList = DbUtils.getDatabaseColumnInfo(connectionMap, resultFieldMap);
 
         System.out.println("=================scala-domain生成开始====================");
@@ -65,14 +65,20 @@ public class CodeCreateBySQL {
         System.out.println("=================scala-domain生成结束====================");
 
         System.out.println("=================thrift-response生成开始====================");
-        String responseThriftClassFileSource = ThriftFileCreatorUtils.createResponseThriftFileSource(responseDatabaseInfoList, thrift_package, thrift_response_struct_name);
+        String responseThriftClassFileSource = ThriftFileCreatorUtils.createStructThriftFileSource(responseDatabaseInfoList, thrift_package, thrift_response_struct_name);
         String responseThriftTargetFilePath = filePath + thrift_response_struct_name + ".thrift";
         FileUtils.writeFile(responseThriftTargetFilePath, responseThriftClassFileSource);
         System.out.println("=================thrift-response生成结束====================");
 
         /**解析条件集*/
-        SQLParserUtils.parseConditionFieldMap(sql, conditionFielfMap);
+        SQLParserUtils.parseConditionFieldByUtils(sql, conditionFielfMap);
+        List<DatabaseInfoBean> requestDatabaseInfoList = DbUtils.getDatabaseColumnInfo(connectionMap, conditionFielfMap);
 
+        System.out.println("=================thrift-request生成开始====================");
+        String requestThriftClassFileSource = ThriftFileCreatorUtils.createStructThriftFileSource(requestDatabaseInfoList, thrift_package, thrift_request_struct_name);
+        String requestThriftTargetFilePath = filePath + thrift_request_struct_name + ".thrift";
+        FileUtils.writeFile(requestThriftTargetFilePath, requestThriftClassFileSource);
+        System.out.println("=================thrift-request生成结束====================");
 
     }
 

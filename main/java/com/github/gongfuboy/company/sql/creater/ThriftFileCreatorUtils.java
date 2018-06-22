@@ -14,7 +14,7 @@ public class ThriftFileCreatorUtils {
     /**
      * 生成thrift结构体
      */
-    public static String createResponseThriftFileSource(List<DatabaseInfoBean> sourceList, String thrift_package, String thrift_response_struct_name){
+    public static String createStructThriftFileSource(List<DatabaseInfoBean> sourceList, String thrift_package, String thrift_response_struct_name){
         StringBuffer structBuf = new StringBuffer();
         structBuf.append(String.format("namespace java com.kuaisu.%s.dto\n\n",thrift_package));
         structBuf.append(String.format("struct T%s{\n", thrift_response_struct_name));
