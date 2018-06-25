@@ -1,4 +1,4 @@
-package com.github.gongfuboy.company.sql.creater
+package com.github.gongfuboy.company.sql.creater.select
 
 import java.io.StringReader
 import java.lang.reflect.Field

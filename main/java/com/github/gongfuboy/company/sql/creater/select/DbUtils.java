@@ -1,4 +1,4 @@
-package com.github.gongfuboy.company.sql.creater;
+package com.github.gongfuboy.company.sql.creater.select;
 
 import com.github.gongfuboy.company.sql.creater.pojo.DatabaseInfoBean;
 import com.github.gongfuboy.company.sql.creater.pojo.TableFieldBean;
