@@ -3,7 +3,6 @@ package com.github.gongfuboy.company.sql.creater;
 import com.github.gongfuboy.company.sql.creater.pojo.TableFieldBean;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.operators.relational.InExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.PlainSelect;
@@ -126,17 +125,17 @@ public class SQLParserUtils {
     private static void parseExpressionsToMap(List<Expression> expressions, Map<String, List<TableFieldBean>> conditionFielfMap) {
         for (Expression expression : expressions) {
             String column;
+            boolean listFlag = false;
             if (expression instanceof BinaryExpression) {
                 column = ((BinaryExpression) expression).getLeftExpression().toString();
-            } else if (expression instanceof InExpression) {
-                column = ((InExpression) expression).getLeftExpression().toString();
-            } else {
+            }  else {
                 throw new RuntimeException("暂不支持目前这种条件解析：" + expression.toString());
             }
             String[] strings = StringUtils.split(column, ".");
             TableFieldBean bean = new TableFieldBean();
             bean.tableName = strings[1];
             bean.fieldName = strings[2];
+            bean.otherName = strings[2] + expression.getClass().getSimpleName();
             if (conditionFielfMap.containsKey(strings[0])) {
                 conditionFielfMap.get(strings[0]).add(bean);
             } else {
@@ -172,11 +171,6 @@ public class SQLParserUtils {
             Expression rightExpression = ((BinaryExpression) expression).getRightExpression();
             if (rightExpression instanceof BinaryExpression) {
                 Expression leftExpression1 = ((BinaryExpression) rightExpression).getLeftExpression();
-                if (leftExpression1 instanceof Column) {
-                    result.add(rightExpression);
-                }
-            } else if (rightExpression instanceof InExpression) {
-                Expression leftExpression1 = ((InExpression) rightExpression).getLeftExpression();
                 if (leftExpression1 instanceof Column) {
                     result.add(rightExpression);
                 }

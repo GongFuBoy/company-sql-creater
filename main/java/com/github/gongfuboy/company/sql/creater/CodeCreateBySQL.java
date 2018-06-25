@@ -65,7 +65,7 @@ public class CodeCreateBySQL {
         System.out.println("=================scala-domain生成结束====================");
 
         System.out.println("=================thrift-response生成开始====================");
-        String responseThriftClassFileSource = ThriftFileCreatorUtils.createStructThriftFileSource(responseDatabaseInfoList, thrift_package, thrift_response_struct_name);
+        String responseThriftClassFileSource = ThriftFileCreatorUtils.createStructThriftFileSource(responseDatabaseInfoList, thrift_package, thrift_response_struct_name, false);
         String responseThriftTargetFilePath = filePath + thrift_response_struct_name + ".thrift";
         FileUtils.writeFile(responseThriftTargetFilePath, responseThriftClassFileSource);
         System.out.println("=================thrift-response生成结束====================");
@@ -75,7 +75,7 @@ public class CodeCreateBySQL {
         List<DatabaseInfoBean> requestDatabaseInfoList = DbUtils.getDatabaseColumnInfo(connectionMap, conditionFielfMap);
 
         System.out.println("=================thrift-request生成开始====================");
-        String requestThriftClassFileSource = ThriftFileCreatorUtils.createStructThriftFileSource(requestDatabaseInfoList, thrift_package, thrift_request_struct_name);
+        String requestThriftClassFileSource = ThriftFileCreatorUtils.createStructThriftFileSource(requestDatabaseInfoList, thrift_package, thrift_request_struct_name, true);
         String requestThriftTargetFilePath = filePath + thrift_request_struct_name + ".thrift";
         FileUtils.writeFile(requestThriftTargetFilePath, requestThriftClassFileSource);
         System.out.println("=================thrift-request生成结束====================");

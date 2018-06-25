@@ -33,7 +33,7 @@ public class DbUtils {
             ResultSet resultSet = connection.getMetaData().getColumns("", databaseName, tableName, columnName);
             while (resultSet.next()) {
                 if (resultSet.getString("COLUMN_NAME").equals(columnName)) {
-                    result.columnName = otherName == null ? resultSet.getString("COLUMN_NAME") : otherName;
+                    result.columnName = otherName == null ? resultSet.getString("COLUMN_NAME") :  otherName;
                     result.isNullable = resultSet.getString("IS_NULLABLE");
                     result.remarks = resultSet.getString("REMARKS");
                     result.typeName = resultSet.getString("TYPE_NAME");

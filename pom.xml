@@ -52,6 +52,18 @@
             <version>0.9.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.dapeng</groupId>
+            <artifactId>dapeng-core</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.gongfuboy</groupId>
+            <artifactId>gongfuboy-uitls</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+
     </dependencies>
 
     <licenses>

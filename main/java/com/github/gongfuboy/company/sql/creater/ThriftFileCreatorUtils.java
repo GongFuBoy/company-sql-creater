@@ -14,14 +14,14 @@ public class ThriftFileCreatorUtils {
     /**
      * 生成thrift结构体
      */
-    public static String createStructThriftFileSource(List<DatabaseInfoBean> sourceList, String thrift_package, String thrift_response_struct_name){
+    public static String createStructThriftFileSource(List<DatabaseInfoBean> sourceList, String thrift_package, String thrift_response_struct_name, boolean isCondition){
         StringBuffer structBuf = new StringBuffer();
-        structBuf.append(String.format("namespace java com.kuaisu.%s.dto\n\n",thrift_package));
+        structBuf.append(String.format("namespace java %s\n\n",thrift_package));
         structBuf.append(String.format("struct T%s{\n", thrift_response_struct_name));
         for (int i=0; i < sourceList.size(); i++) {
             DatabaseInfoBean sourceBean = sourceList.get(i);
             structBuf.append("   /**\n").append("   * ").append(sourceBean.remarks).append("\n").append("*/\n");
-            structBuf.append(" ").append(i + 1).append(" : ").append(MYSQL_BOOLEAN.equals(sourceBean.isNullable) ? "" : "optional").append("  ").
+            structBuf.append(" ").append(i + 1).append(" : ").append(MYSQL_BOOLEAN.equals(sourceBean.isNullable) || isCondition ? "" : "optional").append("  ").
                     append(toThriftType(sourceBean.typeName)).append("  ").append(underlineToCamel(false, sourceBean.columnName, false)).
                     append(",\r\n");
         }

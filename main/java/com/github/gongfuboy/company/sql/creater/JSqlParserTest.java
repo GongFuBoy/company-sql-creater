@@ -13,6 +13,7 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
@@ -74,15 +75,17 @@ public class JSqlParserTest {
     }
 
     private static void whereConditionParseExamples() throws JSQLParserException {
-        String sql = "select DISTINCT my_personal_database.class.id from my_personal_database.class c left join company c1 on c.id = c1.company_id inner join (select * from customer where age > 10) as t" +
+        String sql = "select DISTINCT my_personal_database.class.id, c1.* from my_personal_database.class c left join company c1 on c.id = c1.company_id inner join (select * from customer where age > 10) as t" +
                 " on c1.customer_id = t.id " +
-                "where 1=1 and name not in (select name from company where create_time > 5) and id = 1 and id = 2 and id = 3 and id = 4 ";
+                "where name > 100 and name < 200";
 //        String sql = "select sum(id + count) from class";
         CCJSqlParserManager parserManager = new CCJSqlParserManager();
         Select select = (Select) parserManager.parse(new StringReader(sql));
         PlainSelect plain = (PlainSelect) select.getSelectBody();
-        Expression where_expression = plain.getWhere();
 
+        List<SelectItem> selectItems = plain.getSelectItems();
+
+        Expression where_expression = plain.getWhere();
         List<Expression> expressions = SQLParserUtils.parseExpressionToSimple(where_expression);
         System.out.println(expressions);
 
